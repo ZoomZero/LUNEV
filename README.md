@@ -1,2 +1,2 @@
 # LUNEV
-3rd sem
+3rd semester in MIPT! I decided to join one of the hardest professor, so here are some projects written under his supervision.
