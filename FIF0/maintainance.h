@@ -27,7 +27,7 @@ int FileOpen(const char * filename, int flags)
 ssize_t ReadFile(int fd, void *buf, size_t count)
 {
   ssize_t read_ret;
-  if ((read_ret = read(fd, buf, count)) <= 0)
+  if ((read_ret = read(fd, buf, count)) < 0) //|| errno != 0)
   {
     printf("Cannot read from file descriptor: %d\n", fd);
     exit(EXIT_FAILURE);
@@ -38,7 +38,7 @@ ssize_t ReadFile(int fd, void *buf, size_t count)
 ssize_t WriteFile(int fd, const void *buf, size_t count)
 {
   ssize_t wrt_ret;
-  if ((wrt_ret = write(fd, buf, count)) <= 0)
+  if ((wrt_ret = write(fd, buf, count)) < 0)
   {
     printf("Cannot write to file descriptor: %d\n", fd);
     exit(EXIT_FAILURE);
@@ -83,7 +83,18 @@ ssize_t PrintText(char * buff, ssize_t buf_sz)
 {
   assert(buff != NULL);
 
+  printf("\n");
   ssize_t wrt_ret = WriteFile(STDOUT_FILENO, buff, buf_sz*sizeof(buff[0]));
+  printf("\n");
 
   return wrt_ret;
+}
+
+void DisableNONBLOCK(int fd)
+{
+  int flags;
+
+  flags = fcntl(fd, F_GETFL);
+  flags &= ~O_NONBLOCK;
+  fcntl(fd, F_SETFL, flags);
 }
