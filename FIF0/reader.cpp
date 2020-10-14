@@ -14,35 +14,10 @@ int main(int argc, char const *argv[])
   FifoCreate(PIPENAME, 0666);
   printf("created %s\n", PIPENAME);
 
-  int pipe_fd = FileOpen(PIPENAME, O_RDONLY);// | O_NONBLOCK);
+  int pipe_fd = FileOpen(PIPENAME, O_RDONLY);
   printf("opened %s, fd: %d\n", PIPENAME, pipe_fd);
 
   pid_t writer_pid;
-  pid_t test_pid;
-  ssize_t read_ret;
-
-/*  int i = 0;
-  for(; i < 3; i++)
-  {
-    printf("%d\n", i);
-    read_ret = ReadFile(pipe_fd, &test_pid, sizeof(test_pid));
-    printf("readed pid: %d\n read_ret: %ld\n", test_pid, read_ret);
-    if (read_ret > 0)
-    {
-      writer_pid = test_pid;
-      break;
-    }
-
-    //sleep(3);
-  }
-
-  if (i == 3)
-  {
-    printf("Cannot connect to get pid\n");
-    exit(EXIT_FAILURE);
-  }*/
-
-  //DisableNONBLOCK(pipe_fd);
 
   ReadFile(pipe_fd, &writer_pid, sizeof(writer_pid));
   printf("writer_pid: %d\n", writer_pid);
@@ -56,7 +31,7 @@ int main(int argc, char const *argv[])
 
   DisableNONBLOCK(fifo_fd);
 
-  //ssize_t read_ret;
+  ssize_t read_ret;
   ssize_t wrt_ret;
 
   do
