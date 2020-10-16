@@ -31,8 +31,8 @@ int main(int argc, char const *argv[])
 
   DisableNONBLOCK(fifo_fd);
 
-  ssize_t read_ret;
   ssize_t wrt_ret;
+  ssize_t read_ret;
 
   do
   {

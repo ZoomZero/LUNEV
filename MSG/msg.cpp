@@ -93,7 +93,7 @@ int main(int argc, char const *argv[])
   {
     get_msg(msg_id, i, 0);
     printf("%d\n", i);
-    //fflush(stdout);
+    fflush(stdout);
 
     send_msg(msg_id, i+1, i);
 
