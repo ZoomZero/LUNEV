@@ -1,11 +1,8 @@
 #include "maintainance.h"
 
-int BUFSZ = 256;
-
 int main(int argc, char const *argv[])
 {
-  //char * buff = BuffAlloc(256, 'c');
-  char buff[BUFSZ];
+  char * buff = BuffAlloc(256, 'c');
 
   FifoCreate(PIPENAME, 0666);
   int pipe_fd = FileOpen(PIPENAME, O_WRONLY);
@@ -29,12 +26,7 @@ int main(int argc, char const *argv[])
       PrintText(buff, read_ret);
       break;
     }
-
-    /*int count = read_ret;
-    if (read_ret > 0) {
-    write(STDOUT_FILENO, buff, count);
-    break; }*/
-
+    
     sleep(1);
   }
 
@@ -49,21 +41,12 @@ int main(int argc, char const *argv[])
   do
   {
     errno = 0;
-    read_ret = ReadFile(fifo_fd, buff, BUFSZ);
+    read_ret = ReadFile(fifo_fd, buff, 256*sizeof(buff[0]));
     if (read_ret == 0) break;
 
     PrintText(buff, read_ret);
 
   } while (read_ret > 0);
-
-  /*int count = 0;
-  while (1) {
-  count = read(fifo_fd, buff, BUFSZ);
-  if (count == 0) {
-    break;
-  }
-  write(STDOUT_FILENO, buff, count);
-}*/
 
   close(pipe_fd);
   close(fifo_fd);

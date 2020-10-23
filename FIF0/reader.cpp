@@ -1,7 +1,5 @@
 #include "maintainance.h"
 
-int BUFSZ = 256;
-
 int main(int argc, char const *argv[])
 {
   if (argc != 2)
@@ -10,8 +8,7 @@ int main(int argc, char const *argv[])
     exit(EXIT_FAILURE);
   }
 
-  //char * buff = BuffAlloc(256, 'c');
-  char buff[BUFSZ];
+  char * buff = BuffAlloc(256, 'c');
   int file_fd = FileOpen(argv[1], O_RDONLY | O_NONBLOCK);
 
   FifoCreate(PIPENAME, 0666);
@@ -32,10 +29,10 @@ int main(int argc, char const *argv[])
   do
   {
     errno = 0;
-    read_ret = ReadFile(file_fd, buff, BUFSZ);
+    read_ret = ReadFile(file_fd, buff, 256*sizeof(buff[0]));
     if (read_ret == 0) break;
 
-    wrt_ret = WriteFile(fifo_fd, buff, read_ret);
+    wrt_ret = WriteFile(fifo_fd, buff, read_ret*sizeof(buff[0]));
 
     if (wrt_ret <= 0 && errno == EPIPE)
     {
@@ -43,20 +40,6 @@ int main(int argc, char const *argv[])
       exit(EXIT_FAILURE);
     }
   } while (read_ret > 0);
-
-  /*int count = 0;
-  while ((count = read(file_fd, buff, BUFSZ)) != 0) {
-  // IF ERROR OCURED
-  if (count == -1) {
-    //ERROR("while reading from input file");
-  }
-
-  errno = 0;
-  count = write(file_fd, buff, count);
-  if ((count == 0 && errno == EPIPE) || count < 0) {
-    //ERROR("while writing to writer fifo");
-  }
-}*/
 
   close(file_fd);
   close(pipe_fd);
