@@ -26,7 +26,7 @@ void send_msg(int qid, int msgtype, int size)
         perror("msgsnd error");
         exit(EXIT_FAILURE);
     }
-    printf("sent: %ld\n", msg.msg_type);
+    //printf("sent: %ld\n", msg.msg_type);
 }
 
 void get_msg(int qid, int msgtype, int size)
@@ -43,7 +43,7 @@ void get_msg(int qid, int msgtype, int size)
         }
         printf("No message available for msgrcv()\n");
     }
-    else printf("message received: %ld\n", msg.msg_type);
+    //else printf("message received: %ld\n", msg.msg_type);
 }
 
 int main(int argc, char const *argv[])
@@ -102,6 +102,10 @@ int main(int argc, char const *argv[])
   else
   {
       get_msg(msg_id, number, 0);
+
+      struct msqid_ds a;
+      msgctl(msg_id, IPC_STAT, &a);
+      printf("remain msg %ld\n", a.msg_qnum);
 
       int ret_ctl = msgctl(msg_id, IPC_RMID, NULL);
       if (ret_ctl != 0)

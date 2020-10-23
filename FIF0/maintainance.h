@@ -26,8 +26,9 @@ int FileOpen(const char * filename, int flags)
 
 ssize_t ReadFile(int fd, void *buf, size_t count)
 {
+  errno = 0;
   ssize_t read_ret;
-  if ((read_ret = read(fd, buf, count)) < 0) //|| errno != 0)
+  if ((read_ret = read(fd, buf, count)) < 0) //&& (errno != EAGAIN))
   {
     printf("Cannot read from file descriptor: %d\n", fd);
     exit(EXIT_FAILURE);
@@ -37,8 +38,9 @@ ssize_t ReadFile(int fd, void *buf, size_t count)
 
 ssize_t WriteFile(int fd, const void *buf, size_t count)
 {
+  errno = 0;
   ssize_t wrt_ret;
-  if ((wrt_ret = write(fd, buf, count)) < 0)
+  if ((wrt_ret = write(fd, buf, count)) < 0) //&& (errno != EAGAIN))
   {
     printf("Cannot write to file descriptor: %d\n", fd);
     exit(EXIT_FAILURE);
@@ -83,9 +85,7 @@ ssize_t PrintText(char * buff, ssize_t buf_sz)
 {
   assert(buff != NULL);
 
-  printf("\n");
   ssize_t wrt_ret = WriteFile(STDOUT_FILENO, buff, buf_sz*sizeof(buff[0]));
-  printf("\n");
 
   return wrt_ret;
 }
