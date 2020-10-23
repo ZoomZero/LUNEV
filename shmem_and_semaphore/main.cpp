@@ -5,15 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
+#include "reader.h"
+#include "writer.h"
 
-void reader(char * filename)
-{
-  printf("reader\n");
-}
-void writer()
-{
-  printf("writer\n");
-}
 
 int main(int argc, char *argv[]) {
   if (argc != 2 && argc != 3)
