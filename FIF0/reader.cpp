@@ -26,13 +26,21 @@ int main(int argc, char const *argv[])
   ssize_t wrt_ret;
   ssize_t read_ret;
 
+  int i = 0;
   do
   {
     errno = 0;
     read_ret = ReadFile(file_fd, buff, 256*sizeof(buff[0]));
-    if (read_ret == 0) break;
+    if (read_ret == 0 && i == 0)
+    {
+      printf("File is empty!!!!\n");
+      WriteFile(fifo_fd, empty, 21);
+      break;
+    }
+    else if (read_ret == 0) break;
 
     wrt_ret = WriteFile(fifo_fd, buff, read_ret*sizeof(buff[0]));
+    i++;
 
     if (wrt_ret <= 0 && errno == EPIPE)
     {

@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
       PrintText(buff, read_ret);
       break;
     }
-    
+
     sleep(1);
   }
 

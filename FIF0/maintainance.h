@@ -12,6 +12,7 @@
 #include <errno.h>
 
 #define PIPENAME "/tmp/my_pype"
+char empty[] = {"Empty file(0 symbols)"};
 
 int FileOpen(const char * filename, int flags)
 {
