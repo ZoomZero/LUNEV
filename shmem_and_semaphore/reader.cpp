@@ -101,5 +101,17 @@ int main(int argc, char const *argv[])
 
   free(sem_buf);
 
+  if (shmctl(shm_id, IPC_RMID, NULL) < 0)
+  {
+      printf("Error deattaching shared memory\n");
+      exit(EXIT_FAILURE);
+  }
+
+  if (semctl(sem_id, 0, IPC_RMID) < 0)
+  {
+      printf("Error deleitng semaphores\n");
+      exit(EXIT_FAILURE);
+  }
+
   return 0;
 }
