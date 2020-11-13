@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	ErrorCheck(err < 0, "Error changing sigmask of parent");
 
 	p_pid = getpid();
-  c_pid = fork();
+	c_pid = fork();
 
 	ErrorCheck(c_pid < 0, "Error while creating child");
 
