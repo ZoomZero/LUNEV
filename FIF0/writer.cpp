@@ -19,6 +19,7 @@ int main(int argc, char const *argv[])
   int i = 0;
   for(; i < 3; i++)
   {
+    errno = 0;
     read_ret = ReadFile(fifo_fd, buff, 256*sizeof(buff[0]));
 
     if (read_ret > 0)
@@ -30,9 +31,14 @@ int main(int argc, char const *argv[])
     sleep(1);
   }
 
-  if (i == 3)
+  if (i == 3 && errno == EPIPE)
   {
     printf("Cannot connect to FIFO named %s\n", fifo_name);
+    exit(EXIT_FAILURE);
+  }
+  else if (i == 3)
+  {
+    printf("File is empty!\n");
     exit(EXIT_FAILURE);
   }
 
