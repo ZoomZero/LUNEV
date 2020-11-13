@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
   else if (i == 3)
   {
     printf("File is empty!\n");
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
   }
 
   DisableNONBLOCK(fifo_fd);
