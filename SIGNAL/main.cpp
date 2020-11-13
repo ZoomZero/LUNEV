@@ -94,8 +94,9 @@ int child(pid_t ppid, char * filename, sigset_t block_set, sigset_t empty_set)
 		{
 			fprintf(c_log, "offset = %d\n", offset);
 			fprintf(c_log, "sending byte & offset = %d\n", offset & byte);
-			if (offset & byte)		kill(ppid, SIGUSR1);
-			else 									kill(ppid, SIGUSR2);
+
+			if (offset & byte)    kill(ppid, SIGUSR1);
+			else                  kill(ppid, SIGUSR2);
 			alarm(1);
 			sigsuspend(&empty_set);
 		}
@@ -175,14 +176,17 @@ void ChildIsDead(int signum)
 void GotOne(int signum)
 {
 	fprintf(p_log, "offset in GotOne = %d\n", offset);
+
 	byte += offset;
 	offset = offset << 1;
+
 	kill(c_pid, SIGUSR1);
 }
 
 void GotZero(int sugnum)
 {
 	fprintf(p_log, "offset in GotZero = %d\n", offset);
+	
 	offset = offset << 1;
 
 	kill(c_pid, SIGUSR1);
