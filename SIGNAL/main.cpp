@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
 
 	ErrorCheck(c_pid < 0, "Error while creating child");
 
-  if (c_pid == 0)		child(p_pid, argv[1], block_set, empty_set);
-  else 							parent(c_pid, block_set, empty_set);
+  if (c_pid == 0)		  child(p_pid, argv[1], block_set, empty_set);
+  else                parent(c_pid, block_set, empty_set);
 
 }
 
@@ -186,7 +186,7 @@ void GotOne(int signum)
 void GotZero(int sugnum)
 {
 	fprintf(p_log, "offset in GotZero = %d\n", offset);
-	
+
 	offset = offset << 1;
 
 	kill(c_pid, SIGUSR1);
