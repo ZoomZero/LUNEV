@@ -41,7 +41,6 @@ int main(int argc, char const *argv[])
     printf("Semaphores id not created\n");
     exit(EXIT_FAILURE);
   }
-  semctl(sem_id, SEM_NUM, SETALL, 0);
 
   shm_id = shmget(key, SHM_SIZE, IPC_CREAT | 0666);
   if (shm_id < 0)
