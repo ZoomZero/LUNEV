@@ -158,10 +158,7 @@ int main(int argc, char const *argv[])
           if (bytes_read == 0) connect[i].AvaliableToClose = 1;
         }
       }
-    }
 
-    for(int i = tail + 1; i <= n; i++)
-    {
       if(FD_ISSET(connect[i].write_fd, &write_set))
       {
         if (connect[i].Buf.Avaliable > 0)
