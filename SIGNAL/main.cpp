@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/prctl.h>
 
 #define BUFSZ 256
 #define PLog "ParentLog.txt"
@@ -66,6 +67,15 @@ int main(int argc, char *argv[])
 
 int child(pid_t ppid, char * filename, sigset_t block_set, sigset_t empty_set)
 {
+	err = prctl(PR_SET_PDEATHSIG, SIGTERM);
+	ErrorCheck(err < 0, "Prctl error");
+
+	if (getppid() != p_pid)
+	{
+		printf("Parent died");
+		exit(EXIT_FAILURE);
+	}
+
   int fd = open(filename, O_RDONLY);
 	ErrorCheck(fd < 0, "File cannot be open");
 	fprintf(c_log, "Tranferring file: %s\n", filename);
@@ -75,7 +85,7 @@ int child(pid_t ppid, char * filename, sigset_t block_set, sigset_t empty_set)
 	p_dead.sa_flags = 0;
 	err = sigfillset(&p_dead.sa_mask);
 	ErrorCheck(err < 0, "Error initalizing p_dead mask");
-	err = sigaction(SIGALRM, &p_dead, NULL);
+	err = sigaction(SIGTERM, &p_dead, NULL);
 	ErrorCheck(err < 0, "Error creating handler if parent is dead");
 
 	struct sigaction p_alive;
@@ -97,7 +107,7 @@ int child(pid_t ppid, char * filename, sigset_t block_set, sigset_t empty_set)
 
 			if (offset & byte)    kill(ppid, SIGUSR1);
 			else                  kill(ppid, SIGUSR2);
-			alarm(1);
+			//alarm(1);
 			sigsuspend(&empty_set);
 		}
 
@@ -164,7 +174,7 @@ void ParentIsDead(int signum)
 
 void ParentIsAlive(int signum)
 {
-	alarm(0);
+	//alarm(0);
 }
 
 void ChildIsDead(int signum)
