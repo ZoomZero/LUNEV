@@ -107,7 +107,6 @@ int child(pid_t ppid, char * filename, sigset_t block_set, sigset_t empty_set)
 
 			if (offset & byte)    kill(ppid, SIGUSR1);
 			else                  kill(ppid, SIGUSR2);
-			//alarm(1);
 			sigsuspend(&empty_set);
 		}
 
@@ -174,7 +173,7 @@ void ParentIsDead(int signum)
 
 void ParentIsAlive(int signum)
 {
-	//alarm(0);
+
 }
 
 void ChildIsDead(int signum)
