@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
   semctl(sem_id, 3, SETVAL,1);
 
   SemBufChange(sem_buf, 0, 1, SEM_UNDO, &cur_elem);
-  SemBufChange(sem_buf, 3, -1, 0, &cur_elem);
+  SemBufChange(sem_buf, 3, -1, SEM_UNDO, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
   SemBufChange(sem_buf, 1, -2, 0, &cur_elem);
@@ -88,7 +88,6 @@ int main(int argc, char const *argv[])
       memset(shm_int, 0, DATA_SIZE);
       bytes_read = read(fd, shm_int + sizeof(int), DATA_SIZE - sizeof(int));
       *shm_int = bytes_read;
-      memcpy((char*)shm + sizeof(int), buf, bytes_read);
 
       SemBufChange(sem_buf, 3, 1, 0, &cur_elem);
       SendSemBuf(sem_buf, sem_id, &cur_elem);
