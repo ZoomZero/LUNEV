@@ -20,7 +20,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  sem_id = semget(key, SEM_NUM, IPC_CREAT | 0666);
+  sem_id = semget(key, SEMS_NUM, IPC_CREAT | 0666);
   if (sem_id < 0)
   {
     printf("Semaphores id not created\n");
@@ -42,50 +42,39 @@ int main()
   }
   shm_int = (int*) shm;
 
-  sem_buf = (struct sembuf *) calloc(SEM_NUM, sizeof(*sem_buf));
+  sem_buf = (struct sembuf *) calloc(SEMS_NUM, sizeof(*sem_buf));
 
-  SemBufChange(sem_buf, WAIT_READER, 0, 0, &cur_elem);
-  SemBufChange(sem_buf, WAIT_READER, 1, SEM_UNDO, &cur_elem);
-  SemBufChange(sem_buf, OCCUPY_READER, 0, 0, &cur_elem);
+  SemBufChange(sem_buf, 1, 0, 0, &cur_elem);
+  SemBufChange(sem_buf, 1, 1, SEM_UNDO, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-  SemBufChange(sem_buf, WAIT_WRITER, -1, 0, &cur_elem);
-  SemBufChange(sem_buf, WAIT_WRITER, 1, 0, &cur_elem);
-  SemBufChange(sem_buf, OCCUPY_WRITER, 1, SEM_UNDO, &cur_elem);
+  SemBufChange(sem_buf, 4, 0, 0, &cur_elem);
+  SendSemBuf(sem_buf, sem_id, &cur_elem);
+
+  semctl(sem_id, 2, SETVAL, 2);
+
+  SemBufChange(sem_buf, 1, 1, SEM_UNDO, &cur_elem);
+  SemBufChange(sem_buf, 2, -1, SEM_UNDO, &cur_elem);
+  SendSemBuf(sem_buf, sem_id, &cur_elem);
+
+  SemBufChange(sem_buf, 0, -2, 0, &cur_elem);
+  SemBufChange(sem_buf, 0, 2, 0, &cur_elem);
+  SemBufChange(sem_buf, 4, 1, SEM_UNDO, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
   do
   {
-      SemBufChange(sem_buf, WAIT_WRITER, -1, IPC_NOWAIT, &cur_elem);
-      SemBufChange(sem_buf, WAIT_WRITER, 1, 0, &cur_elem);
-      SemBufChange(sem_buf, IS_FULL, -1, 0, &cur_elem);
-      SemBufChange(sem_buf, MUTEX, -1, SEM_UNDO, &cur_elem);
-      res = SendSemBuf(sem_buf, sem_id, &cur_elem);
+      SemBufChange(sem_buf, 3, -1, 0, &cur_elem);
+      SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-      if (res != 0)
-      {
-        printf("Reader isn't workong properly\n");
-        exit(EXIT_FAILURE);
-      }
+      if (semctl(sem_id, 4, GETVAL) != 2 && *(int*)shm_int == DATA_SIZE - sizeof(int));
 
       bytes_read = *shm_int;
-      if (bytes_read > 0) write(STDOUT_FILENO, (char*) shm + sizeof(int), bytes_read);
-      else if (bytes_read == 0)
-      {
-        printf("finished reading from shm mem\n");
-        SemBufChange(sem_buf, MUTEX, 1, SEM_UNDO, &cur_elem);
-        SendSemBuf(sem_buf, sem_id, &cur_elem);
+      write(STDOUT_FILENO, (char*) shm + sizeof(int), DATA_SIZE - sizeof(int));
 
-        break;
-      }
-      else
-      {
-        printf("Negative bytes' number\n");
-        exit(EXIT_FAILURE);
-      }
-
-      SemBufChange(sem_buf, MUTEX, 1, SEM_UNDO, &cur_elem);
+      SemBufChange(sem_buf, 2, 1, 0, &cur_elem);
       SendSemBuf(sem_buf, sem_id, &cur_elem);
+
   } while(bytes_read > 0);
 
   free(sem_buf);

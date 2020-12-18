@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
     exit(EXIT_FAILURE);
   }
 
-  sem_id = semget(key, SEM_NUM, IPC_CREAT | 0666);
+  sem_id = semget(key, SEMS_NUM, IPC_CREAT | 0666);
   if (sem_id < 0)
   {
     printf("Semaphores id not created\n");
@@ -57,45 +57,42 @@ int main(int argc, char const *argv[])
   }
   int *shm_int = (int *) shm;
 
-  sem_buf = (struct sembuf *) calloc(SEM_NUM, sizeof(*sem_buf));
+  sem_buf = (struct sembuf *) calloc(SEMS_NUM, sizeof(*sem_buf));
 
-  SemBufChange(sem_buf, WAIT_WRITER, 0, 0, &cur_elem);
-  SemBufChange(sem_buf, WAIT_WRITER, 1, SEM_UNDO, &cur_elem);
-  SemBufChange(sem_buf, OCCUPY_WRITER, 0, 0, &cur_elem);
+  SemBufChange(sem_buf, 0, 0, 0, &cur_elem);
+  SemBufChange(sem_buf, 0, 1, SEM_UNDO, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-  SemBufChange(sem_buf, WAIT_READER, -1, 0, &cur_elem);
-  SemBufChange(sem_buf, WAIT_READER, 1, 0, &cur_elem);
-  SemBufChange(sem_buf, OCCUPY_READER, 1, SEM_UNDO, &cur_elem);
+  SemBufChange(sem_buf, 4, 0, 0, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-  SemBufChange(sem_buf, IS_FULL, 1, SEM_UNDO, &cur_elem);
-  SemBufChange(sem_buf, IS_FULL, -1, 0, &cur_elem);
-  SemBufChange(sem_buf, MUTEX, 0, 0, &cur_elem);
-  SemBufChange(sem_buf, MUTEX, 1, SEM_UNDO, &cur_elem);
+  semctl(sem_id, 3, SETVAL,1);
+
+  SemBufChange(sem_buf, 0, 1, SEM_UNDO, &cur_elem);
+  SemBufChange(sem_buf, 3, -1, 0, &cur_elem);
+  SendSemBuf(sem_buf, sem_id, &cur_elem);
+
+  SemBufChange(sem_buf, 1, -2, 0, &cur_elem);
+  SemBufChange(sem_buf, 1, 2, 0, &cur_elem);
+  SemBufChange(sem_buf, 4, 1, SEM_UNDO, &cur_elem);
   SendSemBuf(sem_buf, sem_id, &cur_elem);
 
   do
   {
-      SemBufChange(sem_buf, WAIT_READER, -1, IPC_NOWAIT, &cur_elem);
-      SemBufChange(sem_buf, WAIT_READER, 1, 0, &cur_elem);
-      SemBufChange(sem_buf, IS_FULL, 0, 0, &cur_elem);
-      SemBufChange(sem_buf, MUTEX, -1, SEM_UNDO, &cur_elem);
-      res = SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-      if (res != 0)
-      {
-        printf("Writer isn't workong properly with res = %d\n", res);
-        exit(EXIT_FAILURE);
-      }
+      SemBufChange(sem_buf, 2, -1, 0, &cur_elem);
+      SendSemBuf(sem_buf, sem_id, &cur_elem);
 
-      bytes_read = read(fd, buf, DATA_SIZE);
+      if (semctl(sem_id, 4, GETVAL) != 2) break;
+
+      memset(shm_int, 0, DATA_SIZE);
+      bytes_read = read(fd, shm_int + sizeof(int), DATA_SIZE - sizeof(int));
       *shm_int = bytes_read;
       memcpy((char*)shm + sizeof(int), buf, bytes_read);
 
-      SemBufChange(sem_buf, MUTEX, 1, SEM_UNDO, &cur_elem);
-      SemBufChange(sem_buf, IS_FULL, 1, 0, &cur_elem);
+      SemBufChange(sem_buf, 3, 1, 0, &cur_elem);
       SendSemBuf(sem_buf, sem_id, &cur_elem);
+
   } while(bytes_read > 0);
 
   free(sem_buf);

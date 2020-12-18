@@ -13,17 +13,7 @@
 #define PROJ_ID 1
 #define DATA_SIZE 512
 #define SHM_SIZE (sizeof(int) + DATA_SIZE)
-
-enum sems
-{
-  WAIT_READER,
-  WAIT_WRITER,
-  OCCUPY_READER,
-  OCCUPY_WRITER,
-  MUTEX,
-  IS_FULL,
-  SEM_NUM,
-};
+#define SEMS_NUM 5
 
 int SemBufChange(struct sembuf * sem_buf, short int semnum, short int semop, short int semflag, int * cur_elem)
 {
