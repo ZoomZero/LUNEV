@@ -30,7 +30,7 @@ NODE * NodeCreate(int key)
   n->key = key;
   n->height = 0;
 
-  printf("created node with key = %d\n", key);
+  //printf("created node with key = %d\n", key);
 
   return n;
 }
@@ -58,18 +58,18 @@ int NodeDestroy(NODE * node)
 
 int TreeRotate(NODE ** root, char side)
 {
-  NODE * oldroot;
-  NODE * newroot;
-  NODE * oldmiddle;
+  NODE * oldroot = NULL;
+  NODE * newroot = NULL;
+  NODE * oldmiddle = NULL;
 
   if (side == 'l')
   {
-    printf("doing rotating l \n");
+    //printf("doing rotating l \n");
     oldroot = *root;
     newroot = oldroot->left;
     oldmiddle = newroot->right;
 
-    printf("did smthing\n");
+    //printf("did smthing\n");
 
     oldroot->left = oldmiddle;
     newroot->right = oldroot;
@@ -80,7 +80,7 @@ int TreeRotate(NODE ** root, char side)
   }
   else
   {
-    printf("doing rotating r\n");
+    //printf("doing rotating r\n");
     oldroot = *root;
     newroot = oldroot->right;
     oldmiddle = newroot->left;
@@ -100,7 +100,7 @@ int TreeRotate(NODE ** root, char side)
 
 int TreeRebalance(NODE ** node)
 {
-  if (node != NULL)
+  if (*node != NULL)
   {
     printf("height of chld %d %d\n", NodeGetHeight((*node)->left), NodeGetHeight((*node)->right));
 
@@ -121,19 +121,19 @@ int TreeRebalance(NODE ** node)
     if(NodeGetHeight((*node)->right) > NodeGetHeight((*node)->left) + 1)
     {
       printf("rebalancing right\n");
-      printf("nr k = %d\n", (*node)->right->key);
-      printf("height of chld chld %d %d\n", NodeGetHeight((*node)->right->right), NodeGetHeight((*node)->right->left));
+      //printf("nr k = %d\n", (*node)->right->key);
+      //printf("height of chld chld %d %d\n", NodeGetHeight((*node)->right->right), NodeGetHeight((*node)->right->left));
       if(NodeGetHeight((*node)->right->right) > NodeGetHeight((*node)->right->left))
       {
-        printf("rotating right in rebalancing\n");
+        //printf("rotating right in rebalancing\n");
         TreeRotate(node, 'r');
       }
       else
       {
-        printf("rotating left in rebalancing\n");
+        //printf("rotating left in rebalancing\n");
         TreeRotate(&((*node)->right), 'l');
         TreeRotate(node, 'r');
-        printf("finished left rotating in rebalancing\n");
+        //printf("finished left rotating in rebalancing\n");
       }
 
       return SUCCESS;
@@ -159,63 +159,68 @@ int NodeFixHeight(NODE * node)
   return SUCCESS;
 }
 
-int TreeDeleteMin(NODE * node)
+int TreeDeleteMin(NODE ** node)
 {
-  NODE * oldroot;
-  int minval;
+  NODE * oldroot = NULL;
+  int minval = 0;
 
-  if(node == NULL)
+  if(*node == NULL)
     return ERROR;
 
-  if (node->left == NULL)
+  printf("started deleting\n");
+
+  if ((*node)->left == NULL)
   {
-    oldroot = node;
+    printf("into deleter\n");
+    oldroot = *node;
     minval = oldroot->key;
-    node = oldroot->right;
+    *node = oldroot->right;
     free(oldroot);
+    printf("changed\n");
   }
   else
   {
-    minval = TreeDeleteMin(node->left);
+    minval = TreeDeleteMin(&((*node)->left));
   }
 
-  TreeRebalance(&node);
+  TreeRebalance(node);
 
   return minval;
 }
 
-int TreeDeleteNode(NODE * node, int key)
+int TreeDeleteNode(NODE ** node, int key)
 {
-  NODE * oldroot;
+  NODE * oldroot = NULL;
 
-  if(node == NULL)
+  if(*node == NULL)
     return ERROR;
-  else if (node->key == key)
+
+  else if ((*node)->key == key)
   {
-    if(node->right != NULL)
+    if((*node)->right != NULL)
     {
-      node->key = TreeDeleteMin(node->right);
+      (*node)->key = TreeDeleteMin(&((*node)->right));
     }
     else
     {
-      oldroot = node;
-      node = node->left;
+      oldroot = *node;
+      *node = (*node)->left;
       free(oldroot);
     }
   }
   else
   {
-    if (key > node->key)
+    if (key > (*node)->key)
     {
-      TreeDeleteNode(node->right, key);
+      TreeDeleteNode(&((*node)->right), key);
     }
     else
     {
-      TreeDeleteNode(node->left, key);
+      TreeDeleteNode(&((*node)->left), key);
     }
   }
 
-  TreeRebalance(&node);
+  TreeRebalance(node);
 
   return SUCCESS;
 }
@@ -232,42 +237,56 @@ int TreeInsert(NODE ** node, int key)
 {
   if (*node == NULL)
   {
-    printf("node null in insert\n");
+    //printf("node null in insert\n");
     *node = NodeCreate(key);
     (*node)->height = 1;
-    printf("returning with success\n");
+    //printf("returning with success\n");
     return SUCCESS;
   }
   else if ((*node)->key == key)
   {
-    printf("success in insert\n");
+    //printf("success in insert\n");
     return SUCCESS;
   }
   else
   {
     if (key > (*node)->key)
     {
-      printf("inserting in right(parent with key = %d)\n", (*node)->key);
+      //printf("inserting in right(parent with key = %d)\n", (*node)->key);
       TreeInsert(&((*node)->right), key);
     }
     else
     {
-      printf("inserting in left\n");
+      //printf("inserting in left\n");
       TreeInsert(&((*node)->left), key);
     }
 
-    printf("starting rebalancing in insert\n");
+    //printf("starting rebalancing in insert\n");
     TreeRebalance(node);
 
     return SUCCESS;
   }
 }
 
-NODE * TreeSearch(TREE tree, int key)
+int TreeForEach(TREE * tree, void (*foo)(int key, void * data), void * data)
 {
-  NODE * n = NULL;
+  if (tree == NULL)
+    return ERROR;
 
-  return n;
+  if (foo == NULL)
+    return ERROR;
+
+  TreeDfs(tree->root, foo, data);
+
+  return SUCCESS;
+}
+
+void TreeDfs(NODE * node, void (*foo)(int key, void * data), void * data)
+{
+  foo(node->key, data);
+
+  if(node->left) TreeDfs(node->left, foo,  data);
+  if(node->right)TreeDfs(node->right, foo, data);
 }
 
 void root_graph(NODE * n, FILE * f_dot)
@@ -281,10 +300,6 @@ void root_graph(NODE * n, FILE * f_dot)
   {
     fprintf(f_dot, "\t\"%d\"\n\t\t\"%d\"->\"%d\" [label = \"right\"]\n\n", n->key, n->key, n->right->key);
     root_graph(n->right, f_dot);
-  }
-  if (n->right == NULL && n->left == NULL)
-  {
-        fprintf(f_dot, "\t\"%d\"\n", n->height);
   }
 }
 
@@ -327,31 +342,5 @@ void digraph(NODE * n, char * filename)
   comm[24] = 'p';
   comm[25] = 'g';
 
-  //printf("%s\n", comm);
-
   system(comm);
-}
-
-int main(int argc, char const *argv[])
-{
-  TREE * tree;
-  tree = TreeCreate();
-
-  char pic1[5] = "pic1";
-  digraph(tree->root, pic1);
-
-  int MULTI = 6;
-
-  for (int i = 0; i < 10; i++)
-  {
-    int key = (i*MULTI+1) % 10;
-    printf("key = %d in iter = %d\n", key, i);
-    TreeInsert(&(tree->root), (i*MULTI+1) % 10);
-    printf("finished inserting\n");
-  }
-
-  char pic2[5] = "pic2";
-  digraph(tree->root, pic2);
-
-  return 0;
 }

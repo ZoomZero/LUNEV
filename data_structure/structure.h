@@ -23,12 +23,6 @@ typedef struct Tree
   NODE * root;
 } TREE;
 
-typedef struct Iterator
-{
-
-
-} ITER;
-
 TREE * TreeCreate();
 NODE * NodeCreate(int key);
 int TreeDestroy(TREE * tree);
@@ -36,10 +30,11 @@ int NodeDestroy(NODE * node);
 int TreeRotate(NODE ** root, char side);
 int TreeRebalance(NODE ** node);
 int NodeFixHeight(NODE * node);
-int TreeDeleteMin(NODE * node);
-int TreeDeleteNode(NODE * node, int key);
+int TreeDeleteMin(NODE ** node);
+int TreeDeleteNode(NODE ** node, int key);
 int NodeGetHeight(NODE * node);
 int TreeInsert(NODE ** node, int key);
-NODE * TreeSearch(TREE tree, int key);
+int TreeForEach(TREE * tree, void (*foo)(int key, void * data), void * data);
+void TreeDfs(NODE * node, void (*foo)(int key, void * data), void * data);
 void root_graph(NODE * n, FILE * f_dot);
 void digraph(NODE * n, char * filename);
