@@ -7,7 +7,7 @@ TREE * TreeCreate()
   if(!t)
     return ERROR;
 
-  t->root = NodeCreate(666);
+  t->root = NodeCreate(0);
 
   if(!t->root)
   {
@@ -208,20 +208,24 @@ int TreeInsert(NODE * node, int key)
 {
   if (node == NULL)
   {
+    printf("node null in insert\n");
     node = NodeCreate(key);
   }
   else if (node->key == key)
   {
+    printf("success in insert\n");
     return SUCCESS;
   }
   else
   {
     if (key > node->key)
     {
+      printf("inserting in right\n");
       TreeInsert(node->right, key);
     }
     else
     {
+      printf("inserting in left\n");
       TreeInsert(node->left, key);
     }
 
@@ -269,11 +273,51 @@ void digraph(NODE * n, char * filename)
   fprintf(f_dot, "}");
   fclose(f_dot);
 
-  system("dot -Tjpg digraph -o tree.jpg");
+  char * comm = (char*)calloc(50, sizeof(char));
+  comm[0] = 'd';
+  comm[1] = 'o';
+  comm[2] = 't';
+  comm[3] = ' ';
+  comm[4] = '-';
+  comm[5] = 'T';
+  comm[6] = 'j';
+  comm[7] = 'p';
+  comm[8] = 'g';
+  comm[9] = ' ';
+  strcat(comm, filename);
+  comm[14] = ' ';
+  comm[15] = '-';
+  comm[16] = 'o';
+  comm[17] = ' ';
+  strcat(comm, filename);
+  comm[22] = '.';
+  comm[23] = 'j';
+  comm[24] = 'p';
+  comm[25] = 'g';
+
+  //printf("%s\n", comm);
+
+  system(comm);
 }
 
 int main(int argc, char const *argv[])
 {
-  
+  TREE * tree;
+  tree = TreeCreate();
+
+  char pic1[5] = "pic1";
+  digraph(tree->root, pic1);
+
+  int MULTI = 6;
+
+  /*for (int i = 0; i < 10; i++)
+  {
+    TreeInsert(tree->root, (i*MULTI+1) % 10);
+  }*/
+
+  //char pic[4] = "pic";
+
+  //digraph(tree->root, pic);
+
   return 0;
 }

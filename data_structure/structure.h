@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #define SUCCESS 1
 #define ERROR -1
 
-#define MAX(x, y) if (x > y) return x; else return y;
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 typedef struct Node NODE;
 
