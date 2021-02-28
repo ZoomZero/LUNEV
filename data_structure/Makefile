@@ -6,6 +6,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 LOG = log.txt
 INFO = test.info
 REPORT = report
+TRASH = *.d *.o *.h.gch
 EXECUTABLE = run
 .PHONY = clean
 
@@ -28,6 +29,6 @@ $(SOURCES):
 	$(CC) $(CFLAGS) -o $@ -c $< -MD
 
 clean:
-		rm -rf *.d *.o $(LOG) $(REPORT)
+		rm -rf $(TRASH) $(LOG) $(REPORT)
 
 -include *.d
