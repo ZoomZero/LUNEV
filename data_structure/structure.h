@@ -1,8 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #define SUCCESS 1
 #define ERROR -1
+
+#define MAX(x, y) if (x > y) return x; else return y;
 
 typedef struct Node NODE;
 
@@ -29,10 +32,13 @@ TREE * TreeCreate();
 NODE * NodeCreate(int key);
 int TreeDestroy(TREE * tree);
 int NodeDestroy(NODE * node);
-int TreeRotate(TREE * tree, NODE * root, char side);
-int TreeRebalance(TREE * tree);
-int TreeFixHeight(TREE * tree);
-int * TreeDeleteNode(TREE * tree, int key);
-int TreeGetHeight(TREE tree);
-int TreeInsert(TREE * tree, int key);
+int TreeRotate(NODE * root, char side);
+int TreeRebalance(NODE * node);
+int NodeFixHeight(NODE * node);
+int TreeDeleteMin(NODE * node);
+int TreeDeleteNode(NODE * node, int key);
+int NodeGetHeight(NODE * node);
+int TreeInsert(NODE * node, int key);
 NODE * TreeSearch(TREE tree, int key);
+void root_graph(NODE * n, FILE * f_dot);
+void digraph(NODE * n, char * filename);
