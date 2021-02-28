@@ -1,12 +1,12 @@
 CC = gcc
 CFLAGS = -c -Wall
-LFLAGS = --coverage
+LFLAGS = --coverage --no-warnings
 SOURCES = structure.c test.c
 OBJECTS = $(SOURCES:.cpp=.o)
 LOG = log.txt
 INFO = test.info
 REPORT = report
-TRASH = *.d *.o *.h.gch
+TRASH = *.d *.o *.h.gch *.gcda *.gcno *.info *.jpg run pic1 pic2 pic3
 EXECUTABLE = run
 .PHONY = clean
 
@@ -18,7 +18,7 @@ link: $(EXECUTABLE)
 
 test:
 	./$(EXECUTABLE) > $(LOG)
-	lcov -t $(EXECUTABLE) -o $(INFO) -c -d
+	lcov -t $(EXECUTABLE) -o $(INFO) -c -d .
 	genhtml -o $(REPORT) $(INFO)
 	valgrind ./$(EXECUTABLE)
 
