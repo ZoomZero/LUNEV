@@ -28,7 +28,7 @@ NODE * NodeCreate(int key)
   n->left = NULL;
   n->right = NULL;
   n->key = key;
-  n->height = 1;
+  n->height = 0;
 
   printf("created node with key = %d\n", key);
 
@@ -80,6 +80,7 @@ int TreeRotate(NODE * root, char side)
   }
   else
   {
+    printf("doing rotating r\n");
     oldroot = root;
     newroot = oldroot->right;
     oldmiddle = newroot->left;
@@ -226,6 +227,7 @@ NODE * TreeInsert(NODE * node, int key)
   {
     printf("node null in insert\n");
     node = NodeCreate(key);
+    node->height = 1;
     printf("returning with success\n");
     return node;
   }
@@ -238,13 +240,13 @@ NODE * TreeInsert(NODE * node, int key)
   {
     if (key > node->key)
     {
-      printf("inserting in right\n");
-      TreeInsert(node->right, key);
+      printf("inserting in right(parent with key = %d)\n", node->key);
+      node->right = TreeInsert(node->right, key);
     }
     else
     {
       printf("inserting in left\n");
-      TreeInsert(node->left, key);
+      node->left = TreeInsert(node->left, key);
     }
 
     printf("starting rebalancing in insert\n");
@@ -266,14 +268,18 @@ void root_graph(NODE * n, FILE * f_dot)
   printf("doing root_graph\n");
   if (n->left != NULL)
   {
-    fprintf(f_dot, "\t\"%d\"\n\t\t\"%d\"->\"%d\" [label = \"Yes\"]\n\n", n->height, n->height, n->left->height);
+    fprintf(f_dot, "\t\"%d\"\n\t\t\"%d\"->\"%d\" [label = \"left\"]\n\n", n->height, n->height, n->left->height);
     root_graph(n->left, f_dot);
   }
   if (n->right != NULL)
   {
     printf("right side\n");
-    fprintf(f_dot, "\t\"%d\"\n\t\t\"%d\"->\"%d\" [label = \"No\"]\n\n", n->height, n->height, n->right->height);
+    fprintf(f_dot, "\t\"%d\"\n\t\t\"%d\"->\"%d\" [label = \"right\"]\n\n", n->height, n->height, n->right->height);
     root_graph(n->right, f_dot);
+  }
+  if (n->right == NULL && n->left == NULL)
+  {
+        fprintf(f_dot, "\t\"%d\"\n", n->height);
   }
 }
 
