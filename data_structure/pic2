@@ -1,0 +1,5 @@
+digraph {
+		node [shape="circle", style="filled", fillcolor="blue", fontcolor="#FFFFFF", margin="0.01"];
+		edge [style="dashed"];
+
+}

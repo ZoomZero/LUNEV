@@ -39,7 +39,7 @@ int NodeFixHeight(NODE * node);
 int TreeDeleteMin(NODE * node);
 int TreeDeleteNode(NODE * node, int key);
 int NodeGetHeight(NODE * node);
-int TreeInsert(NODE * node, int key);
+NODE * TreeInsert(NODE * node, int key);
 NODE * TreeSearch(TREE tree, int key);
 void root_graph(NODE * n, FILE * f_dot);
 void digraph(NODE * n, char * filename);
