@@ -5,12 +5,16 @@ TREE * TreeCreate()
   TREE * t = (TREE*) malloc(sizeof(TREE));
 
   if(!t)
+  {
+    free(t);
     return ERROR;
+  }
 
   t->root = NodeCreate(0);
 
   if(!t->root)
   {
+    free(t->root);
     free(t);
     return ERROR;
   }
@@ -243,6 +247,19 @@ int TreeInsert(NODE ** node, int key)
   }
 }
 
+NODE * TreeSearch(NODE * node, int key)
+{
+  if (node == NULL)
+    return 0;
+  else if (key == node->key)
+    return node;
+  else if (key > node->key)
+    return TreeSearch(node->right, key);
+  else
+    return TreeSearch(node->left, key);
+}
+
+
 int TreeForEach(TREE * tree, void (*foo)(int key, void * data), void * data)
 {
   if (tree == NULL)
@@ -318,4 +335,6 @@ void digraph(NODE * n, char * filename)
   comm[25] = 'g';
 
   system(comm);
+
+  free(comm);
 }

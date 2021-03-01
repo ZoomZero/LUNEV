@@ -20,7 +20,7 @@ test:
 	./$(EXECUTABLE) > $(LOG)
 	lcov -t $(EXECUTABLE) -o $(INFO) -c -d .
 	genhtml -o $(REPORT) $(INFO)
-	valgrind ./$(EXECUTABLE)
+	valgrind --leak-check=full ./$(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LFLAGS) -o $@ $(OBJECTS)

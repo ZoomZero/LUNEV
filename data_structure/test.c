@@ -1,8 +1,18 @@
 #include "structure.h"
 
-void test()
-{
+#define MULTI 6
 
+void test(TREE * tree)
+{
+  for (int i = 0; i < 10; i++)
+  {
+    TreeInsert(&(tree->root), (i*MULTI+1) % 10);
+  }
+
+  TreeDeleteMin(&(tree->root));
+
+  TreeDeleteNode(&(tree->root), 7);
+  TreeDeleteNode(&(tree->root), 11);
 }
 
 int main(int argc, char const *argv[])
@@ -13,19 +23,7 @@ int main(int argc, char const *argv[])
   char pic1[5] = "pic1";
   digraph(tree->root, pic1);
 
-  int MULTI = 6;
-
-  for (int i = 0; i < 10; i++)
-  {
-    TreeInsert(&(tree->root), (i*MULTI+1) % 10);
-  }
-
-  char pic2[5] = "pic2";
-  digraph(tree->root, pic2);
-
-  TreeDeleteMin(&(tree->root));
-
-  TreeDeleteNode(&(tree->root), 7);
+  test(tree);
 
   char pic3[5] = "pic3";
   digraph(tree->root, pic3);

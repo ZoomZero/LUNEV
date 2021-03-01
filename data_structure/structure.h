@@ -25,6 +25,7 @@ typedef struct Tree
 
 TREE * TreeCreate();
 NODE * NodeCreate(int key);
+NODE * TreeSearch(NODE * node, int key);
 int TreeDestroy(TREE * tree);
 int NodeDestroy(NODE * node);
 int TreeRotate(NODE ** root, char side);
