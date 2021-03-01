@@ -2,6 +2,11 @@
 
 #define MULTI 6
 
+void cons(NODE * node, void * data)
+{
+
+}
+
 void test(TREE * tree)
 {
   for (int i = 0; i < 10; i++)
@@ -13,6 +18,10 @@ void test(TREE * tree)
 
   TreeDeleteNode(&(tree->root), 7);
   TreeDeleteNode(&(tree->root), 11);
+
+  TreeSearch(tree->root, 1);
+
+  TreeForEach(tree, cons, NULL);
 }
 
 int main(int argc, char const *argv[])

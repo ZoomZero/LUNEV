@@ -43,6 +43,8 @@ int TreeDestroy(TREE * tree)
 
   NodeDestroy(tree->root);
 
+  free(tree);
+
   return SUCCESS;
 }
 
@@ -260,7 +262,7 @@ NODE * TreeSearch(NODE * node, int key)
 }
 
 
-int TreeForEach(TREE * tree, void (*foo)(int key, void * data), void * data)
+int TreeForEach(TREE * tree, void (*foo)(NODE * node, void * data), void * data)
 {
   if (tree == NULL)
     return ERROR;
@@ -273,12 +275,12 @@ int TreeForEach(TREE * tree, void (*foo)(int key, void * data), void * data)
   return SUCCESS;
 }
 
-void TreeDfs(NODE * node, void (*foo)(int key, void * data), void * data)
+void TreeDfs(NODE * node, void (*foo)(NODE * node, void * data), void * data)
 {
-  foo(node->key, data);
+  foo(node, data);
 
-  if(node->left) TreeDfs(node->left, foo,  data);
-  if(node->right)TreeDfs(node->right, foo, data);
+  if(node->left) TreeDfs(node->left, foo, data);
+  if(node->right) TreeDfs(node->right, foo, data);
 }
 
 void root_graph(NODE * n, FILE * f_dot)
