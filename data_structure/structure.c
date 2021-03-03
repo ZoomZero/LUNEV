@@ -1,12 +1,11 @@
 #include "structure.h"
 
-TREE * TreeCreate()
+TREE_t * TreeCreate()
 {
-  TREE * t = (TREE*) malloc(sizeof(TREE));
+  TREE_t * t = (TREE_t*) malloc(sizeof(TREE_t));
 
   if(!t)
   {
-    free(t);
     return ERROR;
   }
 
@@ -14,7 +13,6 @@ TREE * TreeCreate()
 
   if(!t->root)
   {
-    free(t->root);
     free(t);
     return ERROR;
   }
@@ -22,9 +20,9 @@ TREE * TreeCreate()
   return t;
 }
 
-NODE * NodeCreate(int key)
+NODE_t * NodeCreate(int key)
 {
-  NODE * n = (NODE*) malloc(sizeof(NODE));
+  NODE_t * n = (NODE_t*) malloc(sizeof(NODE_t));
 
   if(!n)
     return ERROR;
@@ -37,7 +35,7 @@ NODE * NodeCreate(int key)
   return n;
 }
 
-int TreeDestroy(TREE * tree)
+int TreeDestroy(TREE_t * tree)
 {
   if (tree == NULL) return ERROR;
 
@@ -48,7 +46,7 @@ int TreeDestroy(TREE * tree)
   return SUCCESS;
 }
 
-int NodeDestroy(NODE * node)
+int NodeDestroy(NODE_t * node)
 {
   if (node != NULL)
   {
@@ -60,11 +58,14 @@ int NodeDestroy(NODE * node)
   return SUCCESS;
 }
 
-int TreeRotate(NODE ** root, char side)
+int TreeRotate(NODE_t ** root, char side)
 {
-  NODE * oldroot = NULL;
-  NODE * newroot = NULL;
-  NODE * oldmiddle = NULL;
+  if (root == NULL || *root == NULL)
+    return ERROR;
+
+  NODE_t * oldroot = NULL;
+  NODE_t * newroot = NULL;
+  NODE_t * oldmiddle = NULL;
 
   if (side == 'l')
   {
@@ -97,8 +98,11 @@ int TreeRotate(NODE ** root, char side)
   return SUCCESS;
 }
 
-int TreeRebalance(NODE ** node)
+int TreeRebalance(NODE_t ** node)
 {
+  if (node == NULL)
+    return ERROR;
+
   if (*node != NULL)
   {
 
@@ -140,7 +144,7 @@ int TreeRebalance(NODE ** node)
   return SUCCESS;
 }
 
-int NodeFixHeight(NODE * node)
+int NodeFixHeight(NODE_t * node)
 {
   if (node == NULL)
     return ERROR;
@@ -150,9 +154,9 @@ int NodeFixHeight(NODE * node)
   return SUCCESS;
 }
 
-int TreeDeleteMin(NODE ** node)
+int TreeDeleteMin(NODE_t ** node)
 {
-  NODE * oldroot = NULL;
+  NODE_t * oldroot = NULL;
   int minval = 0;
 
   if(*node == NULL)
@@ -175,14 +179,14 @@ int TreeDeleteMin(NODE ** node)
   return minval;
 }
 
-int TreeDeleteNode(NODE ** node, int key)
+int TreeDeleteNode(NODE_t ** node, int key)
 {
-  NODE * oldroot = NULL;
-
-  if(*node == NULL)
+  if(*node == NULL || node == NULL)
     return ERROR;
 
-  else if ((*node)->key == key)
+  NODE_t * oldroot = NULL;
+
+  if ((*node)->key == key)
   {
     if((*node)->right != NULL)
     {
@@ -212,7 +216,7 @@ int TreeDeleteNode(NODE ** node, int key)
   return SUCCESS;
 }
 
-int NodeGetHeight(NODE * node)
+int NodeGetHeight(NODE_t * node)
 {
   if (node != NULL)
     return node->height;
@@ -220,8 +224,11 @@ int NodeGetHeight(NODE * node)
     return 0;
 }
 
-int TreeInsert(NODE ** node, int key)
+int TreeInsert(NODE_t ** node, int key)
 {
+  if (node == NULL)
+    return ERROR;
+
   if (*node == NULL)
   {
     *node = NodeCreate(key);
@@ -249,7 +256,7 @@ int TreeInsert(NODE ** node, int key)
   }
 }
 
-NODE * TreeSearch(NODE * node, int key)
+NODE_t * TreeSearch(NODE_t * node, int key)
 {
   if (node == NULL)
     return 0;
@@ -262,7 +269,7 @@ NODE * TreeSearch(NODE * node, int key)
 }
 
 
-int TreeForEach(TREE * tree, void (*foo)(NODE * node, void * data), void * data)
+int TreeForEach(TREE_t * tree, void (*foo)(NODE_t * node, void * data), void * data)
 {
   if (tree == NULL)
     return ERROR;
@@ -275,7 +282,7 @@ int TreeForEach(TREE * tree, void (*foo)(NODE * node, void * data), void * data)
   return SUCCESS;
 }
 
-void TreeDfs(NODE * node, void (*foo)(NODE * node, void * data), void * data)
+void TreeDfs(NODE_t * node, void (*foo)(NODE_t * node, void * data), void * data)
 {
   foo(node, data);
 
@@ -283,7 +290,7 @@ void TreeDfs(NODE * node, void (*foo)(NODE * node, void * data), void * data)
   if(node->right) TreeDfs(node->right, foo, data);
 }
 
-void root_graph(NODE * n, FILE * f_dot)
+void root_graph(NODE_t * n, FILE * f_dot)
 {
   if (n->left != NULL)
   {
@@ -297,10 +304,11 @@ void root_graph(NODE * n, FILE * f_dot)
   }
 }
 
-void digraph(NODE * n, char * filename)
+void digraph(NODE_t * n, char * filename)
 {
-  assert(n);
-  assert(filename);
+  if (n == NULL || filename == NULL)
+    return;
+
 
   FILE * f_dot = fopen(filename, "w+");
   assert(f_dot);
