@@ -13,20 +13,8 @@
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 // Declaration
+typedef struct Tree TREE;
 typedef struct Node NODE;
-
-struct Node
-{
-  NODE * left;
-  NODE * right;
-  int key;
-  int height;
-};
-
-typedef struct Tree
-{
-  NODE * root;
-} TREE;
 
 // Prototypes
 //! Creates a tree witn root node key 0

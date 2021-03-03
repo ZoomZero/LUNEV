@@ -1,12 +1,24 @@
 #include "structure.h"
 
+struct Tree
+{
+  NODE * root;
+};
+
+struct Node
+{
+  NODE * left;
+  NODE * right;
+  int key;
+  int height;
+};
+
 TREE * TreeCreate()
 {
   TREE * t = (TREE*) malloc(sizeof(TREE));
 
   if(!t)
   {
-    free(t);
     return ERROR;
   }
 
@@ -14,7 +26,6 @@ TREE * TreeCreate()
 
   if(!t->root)
   {
-    free(t->root);
     free(t);
     return ERROR;
   }
@@ -62,6 +73,9 @@ int NodeDestroy(NODE * node)
 
 int TreeRotate(NODE ** root, char side)
 {
+  if (root == NULL || *root == NULL)
+    return ERROR;
+
   NODE * oldroot = NULL;
   NODE * newroot = NULL;
   NODE * oldmiddle = NULL;
@@ -99,6 +113,9 @@ int TreeRotate(NODE ** root, char side)
 
 int TreeRebalance(NODE ** node)
 {
+  if (node == NULL)
+    return ERROR;
+
   if (*node != NULL)
   {
 
@@ -177,12 +194,12 @@ int TreeDeleteMin(NODE ** node)
 
 int TreeDeleteNode(NODE ** node, int key)
 {
-  NODE * oldroot = NULL;
-
-  if(*node == NULL)
+  if(*node == NULL || node == NULL)
     return ERROR;
 
-  else if ((*node)->key == key)
+  NODE * oldroot = NULL;
+
+  if ((*node)->key == key)
   {
     if((*node)->right != NULL)
     {
@@ -222,6 +239,9 @@ int NodeGetHeight(NODE * node)
 
 int TreeInsert(NODE ** node, int key)
 {
+  if (node == NULL)
+    return ERROR;
+
   if (*node == NULL)
   {
     *node = NodeCreate(key);
@@ -299,8 +319,9 @@ void root_graph(NODE * n, FILE * f_dot)
 
 void digraph(NODE * n, char * filename)
 {
-  assert(n);
-  assert(filename);
+  if (n == NULL || filename == NULL)
+    return;
+
 
   FILE * f_dot = fopen(filename, "w+");
   assert(f_dot);
