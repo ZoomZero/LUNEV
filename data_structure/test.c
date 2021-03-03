@@ -4,12 +4,12 @@
 #define NUMBER 20
 #define NUMBER2 10
 
-void cons(NODE * node, void * data)
+void cons(NODE_t * node, void * data)
 {
 
 }
 
-void test1(TREE * tree)
+void test1(TREE_t * tree)
 {
   for (int i = 0; i < NUMBER; i++)
   {
@@ -36,7 +36,7 @@ void test1(TREE * tree)
   TreeForEach(tree, cons, NULL);
 }
 
-void test2(TREE * tree)
+void test2(TREE_t * tree)
 {
   TreeDestroy(tree);
   TreeForEach(tree, cons, NULL);
@@ -47,19 +47,23 @@ void test2(TREE * tree)
 
   TreeDeleteMin(&(tree->root));
   TreeDeleteNode(&(tree->root), 0);
+  TreeInsert(NULL, 0);
   NodeFixHeight(tree->root);
   TreeRebalance(&(tree->root));
   TreeForEach(tree, NULL, NULL);
+
+  char pic3[5] = "pic3";
+  digraph(tree->root, pic3);
 
   TreeDestroy(tree);
 }
 
 int main(int argc, char const *argv[])
 {
-  TREE * tree;
+  TREE_t * tree;
   tree = TreeCreate();
 
-  TREE * tree2 = NULL;
+  TREE_t * tree2 = NULL;
 
   char pic1[5] = "pic1";
   digraph(tree->root, pic1);
