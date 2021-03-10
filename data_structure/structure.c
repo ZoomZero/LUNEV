@@ -37,7 +37,8 @@ NODE_t * NodeCreate(int key)
 
 int TreeDestroy(TREE_t * tree)
 {
-  if (tree == NULL) return ERROR;
+  if (tree == NULL)
+    return ERROR;
 
   NodeDestroy(tree->root);
 
@@ -103,43 +104,38 @@ int TreeRebalance(NODE_t ** node)
   if (node == NULL)
     return ERROR;
 
-  if (*node != NULL)
-  {
-
-    if(NodeGetHeight((*node)->left) > NodeGetHeight((*node)->right) + 1)
-    {
-      if(NodeGetHeight((*node)->left->left) > NodeGetHeight((*node)->left->right))
-      {
-        TreeRotate(node, 'l');
-      }
-      else
-      {
-        TreeRotate(&((*node)->left), 'r');
-        TreeRotate(node, 'l');
-      }
-    }
-
-    if(NodeGetHeight((*node)->right) > NodeGetHeight((*node)->left) + 1)
-    {
-      if(NodeGetHeight((*node)->right->right) > NodeGetHeight((*node)->right->left))
-      {
-        TreeRotate(node, 'r');
-      }
-      else
-      {
-        TreeRotate(&((*node)->right), 'l');
-        TreeRotate(node, 'r');
-      }
-
-      return SUCCESS;
-    }
-
-    NodeFixHeight(*node);
-
-  }
-  else
+  if (*node == NULL)
     return ERROR;
 
+  if(NodeGetHeight((*node)->left) > NodeGetHeight((*node)->right) + 1)
+  {
+    if(NodeGetHeight((*node)->left->left) > NodeGetHeight((*node)->left->right))
+    {
+      TreeRotate(node, 'l');
+    }
+    else
+    {
+      TreeRotate(&((*node)->left), 'r');
+      TreeRotate(node, 'l');
+    }
+  }
+
+  if(NodeGetHeight((*node)->right) > NodeGetHeight((*node)->left) + 1)
+  {
+    if(NodeGetHeight((*node)->right->right) > NodeGetHeight((*node)->right->left))
+    {
+      TreeRotate(node, 'r');
+    }
+    else
+    {
+      TreeRotate(&((*node)->right), 'l');
+      TreeRotate(node, 'r');
+    }
+
+    return SUCCESS;
+  }
+
+  NodeFixHeight(*node);
 
   return SUCCESS;
 }
@@ -235,7 +231,7 @@ int TreeInsert(NODE_t ** node, int key)
     (*node)->height = 1;
     return SUCCESS;
   }
-  else if ((*node)->key == key)
+  if ((*node)->key == key)
   {
     return SUCCESS;
   }
@@ -286,8 +282,10 @@ void TreeDfs(NODE_t * node, void (*foo)(NODE_t * node, void * data), void * data
 {
   foo(node, data);
 
-  if(node->left) TreeDfs(node->left, foo, data);
-  if(node->right) TreeDfs(node->right, foo, data);
+  if(node->left)
+    TreeDfs(node->left, foo, data);
+  if(node->right)
+    TreeDfs(node->right, foo, data);
 }
 
 void root_graph(NODE_t * n, FILE * f_dot)
