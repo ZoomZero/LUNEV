@@ -1,7 +1,5 @@
 #include "buffer.h"
 
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-
 int rb_read(BUF * r, char * buf, int size)
 {
   bool i_wanted_to_die = true;

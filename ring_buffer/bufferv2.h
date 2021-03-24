@@ -11,10 +11,16 @@ typedef struct rb BUF;
 
 struct rb
 {
-  int head, tail;
+  int head, tail, tmp_head;
   int size;
   char data[0];
+  union shadow
+  {
+    struct
+    {
+      int32_t head;
+      int32_t wr_cnt;
+    };
+    int64_t shadow;
+  };
 };
-
-int rb_read(BUF * ring, char * buf, int size);
-int rb_write(BUF * ring, char * buf, int size);
