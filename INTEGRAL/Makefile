@@ -1,9 +1,9 @@
 CC = g++
-CFLAGS = -c 
+CFLAGS = -c
 LFLAGS = --no-warnings -pthread -D_GNU_SOURCE
 SOURCES = integral.c test.c
 OBJECTS = $(SOURCES:.cpp=.o)
-TRASH = *.d *.o *.h.gch *.jpg pic1 pic2 pic3
+TRASH = *.d *.o *.h.gch
 EXECUTABLE = run
 .PHONY = clean
 

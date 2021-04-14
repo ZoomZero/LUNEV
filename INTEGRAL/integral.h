@@ -19,7 +19,7 @@
 #define SUCCESS 0
 #define ERROR -1
 #define MAX_FILE_LENGTH 256
-#define DX 0.0000001
+#define DX 0.00000001
 #define CPU_ONLINE_FILE "/sys/devices/system/cpu/online"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

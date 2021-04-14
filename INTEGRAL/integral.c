@@ -1,4 +1,4 @@
-  #include "integral.h"
+#include "integral.h"
 
 typedef struct ThreadData
 {
@@ -106,7 +106,11 @@ int init_cpus(CpuInfo * info, unsigned int cpu_count)
     {
       info->hypercpu_available[i] = 1;
     }
+  }
 
+  for (unsigned i = 0; i < max_hypercpu; i++)
+  {
+    CPU_ZERO(&(info->hypercpu_sets[i]));
   }
 
   return SUCCESS;
@@ -126,7 +130,18 @@ void * calculate(void* args)
   double start = ((ThreadData*)args)->a;
   double finish = ((ThreadData*)args)->b;
 
-  ErrorCheck(pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset), "Wrong affinity");
+  errno = 0;
+  if (pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset) == 0)
+  {
+    printf("Bad affinity\n");
+    exit(ERROR);
+  }
+
+  if (errno == ESRCH || errno == EINVAL)
+  {
+    printf("Wrong affinity v2\n");
+    exit(ERROR);
+  }
 
   data->result = 0;
 
@@ -164,11 +179,11 @@ int CreateThreadBuffers(int total, char ** data, int * buf_size)
 
   if (info_size <= line_size)
   {
-  	info_size = 2 * line_size;
+  	info_size = 4 * line_size;
   }
   else
   {
-  	info_size = (info_size / line_size + 2) * line_size;
+  	info_size = (info_size / line_size + 4) * line_size;
   }
 
   *buf_size = info_size;
@@ -177,7 +192,6 @@ int CreateThreadBuffers(int total, char ** data, int * buf_size)
 
   if (*data == NULL)
   	return ERROR;
-
 
   memset(*data, 0, total * info_size);
 
@@ -212,7 +226,7 @@ double StartThreadCalc(CpuInfo * info, unsigned int cpu_count, double a, double 
   			                    begin + size,
   			                    0,
   			                    info->hypercpu_sets[i % info->available_hypercpus_num],
-            		            };
+            		          };
     }
     else
     {
@@ -229,13 +243,27 @@ double StartThreadCalc(CpuInfo * info, unsigned int cpu_count, double a, double 
 
   for (unsigned i = 0; i < max_hypercpu; i++)
   {
-  	pthread_create(&threads[i], NULL, &calculate, (data + i * buf_size));
+    errno = 0;
+  	if (pthread_create(&threads[i], NULL, &calculate, (data + i * buf_size)) != 0)
+    {
+      printf("Bad create\n");
+      exit(ERROR);
+    }
+    if (errno != 0)
+    {
+      printf("Wrong create\n");
+      exit(ERROR);
+    }
   }
 
   double result = 0;
   for (unsigned i = 0; i < max_hypercpu; i++)
   {
-  	pthread_join(threads[i], NULL);
+  	if (pthread_join(threads[i], NULL) != 0)
+    {
+      printf("Bad join\n");
+      exit(ERROR);
+    }
   	ThreadData * cur = (ThreadData*) (data + i * buf_size);
 
   	if (i < cpu_count) result += cur->result;
